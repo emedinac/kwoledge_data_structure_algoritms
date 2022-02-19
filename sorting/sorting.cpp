@@ -77,10 +77,10 @@ void generate_test(std::vector<int> &reserve_sorted_vector, int power_of_two_vec
 int main() {
     std::vector<int> reserve_sorted_vector;
     std::vector<float> time1, time2;
-    float average_time;
+    float average_time1, average_time2;
     Sorting sort;
 
-    for(int vec_size=3; vec_size<16                                                                                                                                                                                                                         ; vec_size++){
+    for(int vec_size=3; vec_size<15; vec_size++){
         int vec_len = std::pow(2,vec_size);
         std::cout<<"\nPower 2**"<<vec_size<<" -> Using N elements:"<<vec_len<<std::endl;
 
@@ -92,8 +92,8 @@ int main() {
             time1.push_back(sort.time_measured);
             reserve_sorted_vector.clear();
         }
-        average_time = std::accumulate(time1.begin(), time1.end(), 0.0) / time1.size();
-        std::cout<<"Average time:"<<average_time<<" seg"<<std::endl;
+        average_time1 = std::accumulate(time1.begin(), time1.end(), 0.0) / time1.size();
+        std::cout<<"Average time:"<<average_time1<<" seg"<<std::endl;
 
 
         std::cout<<"by_merge"<<std::endl;
@@ -103,9 +103,9 @@ int main() {
             time2.push_back(sort.time_measured);
             reserve_sorted_vector.clear();
         }
-        average_time = std::accumulate(time2.begin(), time2.end(), 0.0) / time2.size();
-        std::cout<<"Average time:"<<average_time<<" seg"<<std::endl;
-
+        average_time2 = std::accumulate(time2.begin(), time2.end(), 0.0) / time2.size();
+        std::cout<<"Average time:"<<average_time2<<" seg"<<std::endl;
+        std::cout<<"rate:"<<average_time1/average_time2<<std::endl;
 
         std::cout << std::endl;
         time1.clear();
