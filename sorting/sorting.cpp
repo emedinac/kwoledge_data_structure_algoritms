@@ -3,6 +3,7 @@
 #include <cmath>
 #include <chrono>
 #include <numeric>
+#include <random>
 
 namespace clk = std::chrono;
 
@@ -68,26 +69,53 @@ public:
         return 0;
     }
 };
+class TestGen {
+public:
+    void generate_worst_case_test(std::vector<int> &vector, int power_of_two_vector_lenght){
+        for( int i = std::pow(2,power_of_two_vector_lenght); i >=0 ; i-- )
+            vector.push_back( i );
+    }
 
-void generate_test(std::vector<int> &reserve_sorted_vector, int power_of_two_vector_lenght){
-    for( int i = std::pow(2,power_of_two_vector_lenght); i >=0 ; i-- )
-        reserve_sorted_vector.push_back( i );
-}
+    void generate_best_case_test(std::vector<int> &vector, int power_of_two_vector_lenght){
+        for( int i = 0; i <std::pow(2,power_of_two_vector_lenght) ; i++ )
+            vector.push_back( i );
+    }
+
+    void generate_one_miss_case_test(std::vector<int> &vector, int power_of_two_vector_lenght){
+        generate_best_case_test(vector,power_of_two_vector_lenght);
+        std::swap(vector[0],vector[vector.size()-1]);
+    }
+
+    void generate_nearly_ordered_case_test(std::vector<int> &vector, int power_of_two_vector_lenght){
+        int idx1, idx2, last = std::pow(2,power_of_two_vector_lenght);
+        for( int i = 0; i <last ; i++ )
+            vector.push_back( i );
+        std::random_device dev;
+        std::mt19937 rng(dev());
+        std::uniform_int_distribution<std::mt19937::result_type> dist(0,last-1); // distribution
+        for(int i=0; i<last/10; i++){
+            idx1 = dist(rng);
+            idx2 = dist(rng);
+            std::swap(vector[idx1],vector[idx2]);
+        }
+    }
+};
 
 int main() {
     std::vector<int> reserve_sorted_vector;
     std::vector<float> time1, time2;
     float average_time1, average_time2;
     Sorting sort;
+    TestGen test;
 
     for(int vec_size=3; vec_size<15; vec_size++){
         int vec_len = std::pow(2,vec_size);
-        std::cout<<"\nPower 2**"<<vec_size<<" -> Using N elements:"<<vec_len<<std::endl;
+        std::cout<<"\nPower 2**"<<vec_size<<" -> "<< vec_len <<" elements:"<<std::endl;
 
 
         std::cout<<"by_insertion"<<std::endl;
         for(int n=0; n<25; n++){
-            generate_test(reserve_sorted_vector, vec_size);
+            test.generate_nearly_ordered_case_test(reserve_sorted_vector, vec_size);
             sort.by_insertion(reserve_sorted_vector);
             time1.push_back(sort.time_measured);
             reserve_sorted_vector.clear();
@@ -98,7 +126,7 @@ int main() {
 
         std::cout<<"by_merge"<<std::endl;
         for(int n=0; n<25; n++){
-            generate_test(reserve_sorted_vector, vec_size);
+            test.generate_nearly_ordered_case_test(reserve_sorted_vector, vec_size);
             sort.by_merge(reserve_sorted_vector);
             time2.push_back(sort.time_measured);
             reserve_sorted_vector.clear();
